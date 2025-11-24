@@ -8,6 +8,9 @@ public class SmartShopApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(SmartShopApplication.class, args);
+     hellowrold();
     }
-
+    public static void hellowrold(){
+        System.out.println("hellowrold");
+    }
 }
