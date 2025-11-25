@@ -1,12 +1,11 @@
 package com.example.smartshop.Models;
 
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.example.smartshop.Models.Enums.PaymentStatus; // Assuming this Enum exists
+import com.example.smartshop.Models.Enums.PaymentType; // Assuming this Enum exists
+import jakarta.persistence.*;
 import lombok.Data;
 
+import java.math.BigDecimal; // Import for financial accuracy
 import java.util.Date;
 
 @Entity
@@ -15,12 +14,27 @@ public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long orderId;
-    private double paymentNumber;
-    private Double amount;
-    private String payment_type;
+
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "commande_id", nullable = false)
+    private Commande commande;
+
+
+    private Integer paymentNumber;
+    private BigDecimal amount;
+
+    @Enumerated(EnumType.STRING)
+    private PaymentType paymentType;
+
+    @Enumerated(EnumType.STRING)
+    private PaymentStatus status;
+
     private Date paymentDate;
     private Date collectionDate;
 
 
+    private String reference;
+    private String bankName;
+    private Date dueDate;
 }

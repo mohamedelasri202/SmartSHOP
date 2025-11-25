@@ -26,7 +26,9 @@ public class Client {
     private Date firstOrderDate;
     private Date lastOrderDate;
     @Enumerated(EnumType.STRING)
+
     private LoyaltyLevel loyaltyLevel = LoyaltyLevel.BASIC;
+
     @OneToMany(mappedBy = "client")
     private List<Commande>ordersList;
 
