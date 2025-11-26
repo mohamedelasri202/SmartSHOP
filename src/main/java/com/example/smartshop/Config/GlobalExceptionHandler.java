@@ -3,6 +3,7 @@ package com.example.smartshop.Config;
 import com.example.smartshop.Exceptions.AuthenticationFailedException;
 import com.example.smartshop.Exceptions.BusinessValidationException;
 import com.example.smartshop.DTO.ErrorResponse; // Your Custom DTO
+import com.example.smartshop.Exceptions.ForbiddenAccessException;
 import com.example.smartshop.Exceptions.ResourceNotFoundException;
 import org.hibernate.ResourceClosedException;
 import org.springframework.http.HttpStatus;
@@ -52,5 +53,16 @@ public class GlobalExceptionHandler {
                 return new ResponseEntity<>(errorResponse.toString(), HttpStatus.UNAUTHORIZED);
 
 
+    }
+
+    @ExceptionHandler(ForbiddenAccessException.class)
+    public ResponseEntity<String>ForbiddenAccessExceptionHandler(ForbiddenAccessException ex, WebRequest request) {
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.UNAUTHORIZED.value(),
+                "UNAUTHORIZED",
+                ex.getMessage(),
+                request.getDescription(false).replace("uri=", "")
+        );
+                return new ResponseEntity<>(errorResponse.toString(), HttpStatus.UNAUTHORIZED);
     }
 }
