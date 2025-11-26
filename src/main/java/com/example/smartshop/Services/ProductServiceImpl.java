@@ -1,6 +1,7 @@
 package com.example.smartshop.Services;
 
 import com.example.smartshop.DTO.ProductDto;
+import com.example.smartshop.Exceptions.ResourceNotFoundException;
 import com.example.smartshop.Mapper.ProductMapper;
 import com.example.smartshop.Models.Product;
 import com.example.smartshop.Repositories.ProductRepository;
@@ -29,10 +30,16 @@ public class ProductServiceImpl implements ProductServiceInterface {
         return productMapper.toDto(savedProduct);
 
     }
-//    @Override
-//    public ProductDto updateProduct(ProductDto productDto){
-//
-//    }
+    @Override
+    public ProductDto updateProduct(ProductDto productDto , Integer id){
+//         Product product = productMapper.toEntity(productDto);
+         Product product = productRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Product not found"));
+
+          productMapper.updateProduct(productDto,product);
+          Product savedProduct =  productRepository.save(product);
+            return productMapper.toDto(savedProduct);
+
+    }
 //    @Override
 //    public void deleteProduct(ProductDto productDto){
 //

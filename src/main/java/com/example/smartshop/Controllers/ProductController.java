@@ -10,10 +10,7 @@ import jakarta.servlet.http.HttpSession;
 //import jdk.swing.interop.SwingInterOpUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 //import jakarta.servlet.http.HttpSession;
 //import org.springframework.web.client.HttpClientErrorException;
 
@@ -40,13 +37,20 @@ public class ProductController {
 
         if (!authUtil.isAdmin(session)) {
 
-            throw new ForbiddenAccessException("You must have ADMIN privileges to create a product.");
+            throw new ForbiddenAccessException("You don't have the privileges to create a product.");
         }
 
         ProductDto savedProductDto = productService.createProduct(creationDto);
 
         return new ResponseEntity<>(savedProductDto, HttpStatus.CREATED);
     }
-
+@PutMapping("/{id}/updateProduct")
+    public ResponseEntity<ProductDto> updateProduct(@RequestBody ProductDto productDto, @PathVariable Integer id,HttpSession session) {
+        if(!authUtil.isAdmin(session)) {
+            throw new ForbiddenAccessException("You don't have the privileges to update a product.");
+        }
+        ProductDto savedProductDto = productService.updateProduct(productDto, id);
+        return new ResponseEntity<>(savedProductDto, HttpStatus.CREATED);
+}
 
 }
