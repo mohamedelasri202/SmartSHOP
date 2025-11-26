@@ -5,7 +5,7 @@ import com.example.smartshop.Models.User;
 import com.example.smartshop.Repositories.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import com.example.smartshop.Util.PasswordEncoder;
 
 
 @Configuration
