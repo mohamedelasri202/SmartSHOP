@@ -1,5 +1,7 @@
 package com.example.smartshop.Util;
 
+import com.example.smartshop.Models.Enums.UserRole;
+import com.example.smartshop.Models.User;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Component;
 
@@ -10,11 +12,9 @@ public class AuthUtil {
         if(session == null ){
             return false;
         }
-        String role = (String)session.getAttribute("UserRole");
-        if(role == null){
-            return false;
-        }
-        return role.equals("Admin");
+        UserRole role =(UserRole)  session.getAttribute("userRole");
+
+        return role == UserRole.ADMIN ;
 
     }
 }

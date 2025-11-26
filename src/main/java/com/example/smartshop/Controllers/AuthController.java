@@ -31,7 +31,7 @@ public class AuthController {
 
             session.setAttribute("userID",user.getId());
             session.setAttribute("userRole",user.getRole());
-
+            System.out.println(session.getAttribute("userRole"));
             return ResponseEntity.ok("login success");
 
         }
