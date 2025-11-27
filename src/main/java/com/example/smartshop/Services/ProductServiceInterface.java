@@ -10,6 +10,6 @@ import java.util.List;
 public interface ProductServiceInterface {
     ProductDto createProduct(ProductDto product);
     ProductDto updateProduct(ProductDto product,Integer id);
-//    void deleteProduct(ProductDto product);
+    void deleteProduct(Integer id);
 //    Page<Product> getProducts(Pageable pageable);
 }

@@ -40,10 +40,13 @@ public class ProductServiceImpl implements ProductServiceInterface {
             return productMapper.toDto(savedProduct);
 
     }
-//    @Override
-//    public void deleteProduct(ProductDto productDto){
-//
-//    }
+    @Override
+    public void deleteProduct(Integer id){
+        Product product = productRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Product not found"));
+             product.setIsDeleted(true);
+                productRepository.save(product);
+
+    }
 //    @Override
 //    public Page<Product> getProducts(Pageable pageable) {}
 }
