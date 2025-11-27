@@ -54,12 +54,12 @@ public class ProductController {
 }
 
 @DeleteMapping("/{id}/deleteProduct")
-    public ResponseEntity<ProductDto> deleteProduct(@PathVariable Integer id, HttpSession session) {
+    public ResponseEntity<String> deleteProduct(@PathVariable Integer id, HttpSession session) {
         if(!authUtil.isAdmin(session)) {
             throw  new ForbiddenAccessException("You don't have the privileges to delete a product.");
         }
         productService.deleteProduct(id);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return  ResponseEntity.ok("the product has been deleted");
 }
 
 }
