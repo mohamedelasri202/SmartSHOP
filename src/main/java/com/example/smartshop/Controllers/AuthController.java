@@ -1,6 +1,8 @@
 package com.example.smartshop.Controllers;
 
 
+import com.example.smartshop.DTO.ClientCreationDto;
+import com.example.smartshop.DTO.ClientDto;
 import com.example.smartshop.DTO.LoginRequest;
 import com.example.smartshop.Models.User;
 import com.example.smartshop.Repositories.UserRepository;
@@ -34,6 +36,11 @@ public class AuthController {
             System.out.println(session.getAttribute("userRole"));
             return ResponseEntity.ok("login success");
 
+        }
+@PostMapping("logout")
+        public ResponseEntity<String> logout(HttpSession session) {
+        session.invalidate();
+        return ResponseEntity.ok("logout  success");
         }
 
 
