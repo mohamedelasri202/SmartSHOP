@@ -39,13 +39,15 @@ public class ClientController {
     }
 
     @PutMapping("/{id}/updateClient")
-    public ResponseEntity<ClientDto>updateClient(@PathVariable("id") long id, @RequestBody ClientDto dto , HttpSession session) {
-        if(!authUtil.isAdmin(session)) {
-            throw  new ForbiddenAccessException("Sorry you don't have permission to access this resource");
+    public ResponseEntity<ClientDto> updateClient(@PathVariable("id") long id, @RequestBody ClientDto dto, HttpSession session) {
+        if (!authUtil.isAdmin(session)) {
+            throw new ForbiddenAccessException("Sorry you don't have permission to access this resource");
         }
-       ClientDto toUpdateClient = clientService.updateClient(dto);
-        return  new ResponseEntity<>(dto, HttpStatus.OK);
 
+
+        ClientDto updatedClientDto = clientService.updateClient(dto, id);
+
+        return new ResponseEntity<>(updatedClientDto, HttpStatus.OK);
     }
 
 

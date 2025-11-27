@@ -57,7 +57,14 @@ public class ClientServiceImpl implements ClientServiceInterface {
     @Transactional
     public ClientDto updateClient(ClientDto clientDto,Long id) {
         Client client =clientRepository.findById(id).orElseThrow(()->new BusinessValidationException("Client with id: "+id+" not found"));
+        clientMapper.updateClientFromDto(clientDto,client);
+
+        Client updatedClient = clientRepository.save(client);
+
+        return clientMapper.toDto(updatedClient);
     }
+
+
 
 
 
