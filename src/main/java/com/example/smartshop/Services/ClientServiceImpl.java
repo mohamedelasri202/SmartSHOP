@@ -13,6 +13,7 @@ import com.example.smartshop.Repositories.ClientRepository;
 import com.example.smartshop.Repositories.UserRepository;
 import com.example.smartshop.Util.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 
@@ -52,6 +53,13 @@ public class ClientServiceImpl implements ClientServiceInterface {
 
 
     }
+
+    @Transactional
+    public ClientDto updateClient(ClientDto clientDto,Long id) {
+        Client client =clientRepository.findById(id).orElseThrow(()->new BusinessValidationException("Client with id: "+id+" not found"));
+    }
+
+
 
 
 

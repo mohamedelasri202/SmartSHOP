@@ -6,4 +6,5 @@ import com.example.smartshop.DTO.ClientDto;
 public interface ClientServiceInterface {
 
     ClientDto createClient(ClientCreationDto clientDto);
+    ClientDto updateClient(ClientDto clientDto,Long id);
 }
