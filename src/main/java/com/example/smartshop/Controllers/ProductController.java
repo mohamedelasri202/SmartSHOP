@@ -45,7 +45,7 @@ public class ProductController {
         return new ResponseEntity<>(savedProductDto, HttpStatus.CREATED);
     }
 @PutMapping("/{id}/updateProduct")
-    public ResponseEntity<ProductDto> updateProduct(@RequestBody ProductDto productDto, @PathVariable Integer id,HttpSession session) {
+    public ResponseEntity<ProductDto> updateProduct(@RequestBody ProductDto productDto, @PathVariable Long id,HttpSession session) {
         if(!authUtil.isAdmin(session)) {
             throw new ForbiddenAccessException("You don't have the privileges to update a product.");
         }
@@ -54,7 +54,7 @@ public class ProductController {
 }
 
 @DeleteMapping("/{id}/deleteProduct")
-    public ResponseEntity<String> deleteProduct(@PathVariable Integer id, HttpSession session) {
+    public ResponseEntity<String> deleteProduct(@PathVariable Long id, HttpSession session) {
         if(!authUtil.isAdmin(session)) {
             throw  new ForbiddenAccessException("You don't have the privileges to delete a product.");
         }

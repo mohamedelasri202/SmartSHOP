@@ -31,7 +31,7 @@ public class ProductServiceImpl implements ProductServiceInterface {
 
     }
     @Override
-    public ProductDto updateProduct(ProductDto productDto , Integer id){
+    public ProductDto updateProduct(ProductDto productDto , Long id){
 //         Product product = productMapper.toEntity(productDto);
          Product product = productRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Product not found"));
 
@@ -41,7 +41,7 @@ public class ProductServiceImpl implements ProductServiceInterface {
 
     }
     @Override
-    public void deleteProduct(Integer id){
+    public void deleteProduct(Long id){
         Product product = productRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Product not found"));
              product.setIsDeleted(true);
                 productRepository.save(product);

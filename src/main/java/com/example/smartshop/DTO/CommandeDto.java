@@ -19,7 +19,7 @@ public class CommandeDto {
     private BigDecimal subtotalHT;
     private BigDecimal totalDiscountAmount;
     private BigDecimal amountHTAfterDiscount;
-    private BigDecimal vatAmount;
+    private BigDecimal vat;
     private BigDecimal totalTTC;
 
     private String promoCode;
