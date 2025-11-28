@@ -18,6 +18,7 @@ import com.example.smartshop.Repositories.ProductRepository;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class CommandeServiceImpl implements CommandeServiceInterface {
@@ -82,8 +83,33 @@ public class CommandeServiceImpl implements CommandeServiceInterface {
              subtotalHT = subtotalHT.add(orderItem.getLineTotal());
              itemsToSave.add(orderItem);
         }
-    newCommande.setSousTotalHT(subtotalHT);
+        newCommande.setSousTotalHT(subtotalHT);
         LoyaltyLevel tier = client.getLoyaltyLevel();
+
+
+        if (commandeDto.getPromoCode() != null && commandeDto.getPromoCode().matches("PROMO-[A-Z0-9]{4}")) {
+            totalDiscountAmount = totalDiscountAmount.add(subtotalHT.multiply(new BigDecimal("0.5")));
+        }
+
+        newCommande.setTotalDiscountAmount(totalDiscountAmount);
+
+        BigDecimal amountHtAfterDiscount = subtotalHT.subtract(totalDiscountAmount);
+
+        newCommande.setAmountHTAfterDiscount(amountHtAfterDiscount);
+
+        BigDecimal vatAmount = amountHtAfterDiscount.multiply(new BigDecimal("0.20"));
+        newCommande.setVat(vatAmount);
+
+        BigDecimal  totalHTTC = amountHtAfterDiscount.add(vatAmount);
+        newCommande.setTotalWithTax(totalHTTC);
+
+        newCommande.setItems(itemsToSave);
+        newCommande.setOrderStatus(OrderStatus.PENDING);
+        newCommande.setRemainingAmount(totalHTTC);
+        newCommande.setDate(new Date());
+
+        Commande savedCommande = commandeRepository.save(newCommande);
+        return commandeMapper.toDto(savedCommande);
 
     }
 }
