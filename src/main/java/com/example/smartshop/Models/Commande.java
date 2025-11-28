@@ -41,7 +41,7 @@ public class Commande {
     private String promoCode;
 
     @Enumerated(EnumType.STRING)
-    private OrderStatus orderStatus;
+    private OrderStatus orderStatus = OrderStatus.PENDING;
 
     private BigDecimal remainingAmount;
 }
