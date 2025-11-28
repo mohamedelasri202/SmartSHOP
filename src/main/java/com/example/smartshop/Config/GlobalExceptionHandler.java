@@ -31,15 +31,21 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
+    // Inside your GlobalExceptionHandler.java
+
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ErrorResponse>ResourceNotFoundExceptionHandler(ResourceClosedException ex, WebRequest request) {
-        ErrorResponse errorResponse = new ErrorResponse(
-                HttpStatus.NOT_FOUND.value(),
-                "Resouces_NOT_FOUND",
+    public ResponseEntity<ErrorResponse> ResourceNotFound(ResourceNotFoundException ex, WebRequest request) {
+
+        // Create the ErrorResponse DTO with the correct 404 status
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.NOT_FOUND.value(), // 404
+                "RESOURCE_NOT_FOUND",
                 ex.getMessage(),
                 request.getDescription(false).replace("uri=", "")
         );
-        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+
+        // Return the response with the correct HTTP 404 status code
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(AuthenticationFailedException.class)

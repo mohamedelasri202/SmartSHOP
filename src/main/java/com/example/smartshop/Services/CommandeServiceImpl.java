@@ -35,8 +35,11 @@ public class CommandeServiceImpl implements CommandeServiceInterface {
     private final BigDecimal DISCOUNT_RATE_SILVER = new BigDecimal("0.05");
 
     private final BigDecimal THRESHOLD_PLATINUM = new BigDecimal("1200.00");
+    private final int ORDERS_THRESHOLD_PLATINUM = 20;
     private final BigDecimal THRESHOLD_GOLD = new BigDecimal("800.00");
+    private final int ORDERS_THRESHOLD_GOLD = 10;
     private final BigDecimal THRESHOLD_SILVER = new BigDecimal("500.00");
+    private final int ORDERS_THRESHOLD_SILVER = 3;
     private final BigDecimal PROMO_RATE = new BigDecimal("0.05");
 
 
@@ -52,13 +55,10 @@ public class CommandeServiceImpl implements CommandeServiceInterface {
     @Transactional
     public CommandeDto createCommande(CommandeDto commandeDto) {
 
-        // --- 1. INITIAL SETUP AND VALIDATIONS ---
-
-        // A. Fetch Client (Using safe method)
         Client client = clientRepository.findById(commandeDto.getClientId())
                 .orElseThrow(() -> new ResourceNotFoundException("Client not found with ID: " + commandeDto.getClientId()));
 
-        // B. Basic Validation (Items check)
+
         if (commandeDto.getItems() == null || commandeDto.getItems().isEmpty()) {
             throw new BusinessValidationException("Order must contain at least one item.");
         }
@@ -176,4 +176,80 @@ public class CommandeServiceImpl implements CommandeServiceInterface {
         // Return the final DTO
         return commandeMapper.toDto(savedCommande);
     }
+
+
+    public CommandeDto confirmCommande(Long id) {
+        Commande order = commandeRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Order not found with ID: " + id));
+
+        if(order.getOrderStatus() != OrderStatus.PENDING) {
+            throw new BusinessValidationException("Order status is NOT PENDING");
+        }
+        Client client = order.getClient();
+        if(order.getRemainingAmount().compareTo(BigDecimal.ZERO) != 0) {
+            throw new BusinessValidationException("Order cannot be confirmed. Remaining amount due is: " + order.getRemainingAmount());
+        }
+        for(OrderItem orderItem : order.getItems()) {
+            Product product = orderItem.getProduct();
+            if(product.getAvailableStock() < orderItem.getQuantity()) {
+                throw new BusinessValidationException("Product quantity less than available stock: " + product.getName());
+            }
+            product.setAvailableStock(product.getAvailableStock() - orderItem.getQuantity());
+            productRepository.save(product);
+        }
+        client.setTotalOrders(client.getTotalOrders() + 1);
+        client.setTotalSpent(client.getTotalSpent().add(order.getTotalWithTax()));
+
+        // Update last order date
+        client.setLastOrderDate(new Date());
+
+        // Set first order date if null
+        if (client.getFirstOrderDate() == null) {
+            client.setFirstOrderDate(new Date());
+        }
+
+        // C. Recalculate Loyalty Tier (Tier Update Logic)
+        LoyaltyLevel newTier = calculateNewLoyaltyTier(client.getTotalOrders(), client.getTotalSpent());
+        client.setLoyaltyLevel(newTier);
+
+        // Save modified client entity (persists stat and tier changes)
+        clientRepository.save(client);
+
+        // --- 4. FINAL STATUS AND RETURN ---
+
+        order.setOrderStatus(OrderStatus.RECEIVED);
+
+        // Save modified command entity
+        Commande savedCommande = commandeRepository.save(order);
+
+        return commandeMapper.toDto(savedCommande);
+
+
+
+
+    }
+
+
+    private LoyaltyLevel calculateNewLoyaltyTier(Integer totalOrders, BigDecimal totalSpent) {
+
+
+        if (totalOrders >= ORDERS_THRESHOLD_PLATINUM || totalSpent.compareTo(THRESHOLD_PLATINUM) >= 0) {
+            return LoyaltyLevel.PLATINUM;
+        }
+
+
+        if (totalOrders >= ORDERS_THRESHOLD_GOLD || totalSpent.compareTo(THRESHOLD_GOLD) >= 0) {
+            return LoyaltyLevel.GOLD;
+        }
+
+
+        if (totalOrders >= ORDERS_THRESHOLD_SILVER || totalSpent.compareTo(THRESHOLD_SILVER) >= 0) {
+            return LoyaltyLevel.SILVER;
+        }
+
+
+        return LoyaltyLevel.BASIC;
+    }
+
+
+
 }
