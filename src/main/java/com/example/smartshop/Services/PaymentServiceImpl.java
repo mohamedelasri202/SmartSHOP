@@ -23,6 +23,8 @@ public class PaymentServiceImpl implements PaymentServiceInterface{
     private final CommandeRepository commandeRepository;
     private final PaymentMapper  paymentMapper;
     private final PaymentRepository paymentRepository;
+
+
     public PaymentServiceImpl(CommandeRepository commandeRepository, PaymentMapper paymentMapper, PaymentRepository paymentRepository) {
         this.commandeRepository = commandeRepository;
         this.paymentMapper = paymentMapper;
@@ -39,10 +41,12 @@ public class PaymentServiceImpl implements PaymentServiceInterface{
             throw new BusinessValidationException("Cannot record payment. Order status is: " + commande.getOrderStatus());
         }
 
-
         Payment paymentToSave = paymentMapper.toEntity(paymentDto);
 
+        Integer existingPaymentsCount = paymentRepository.countByCommandeId(commandeId);
 
+
+        paymentToSave.setPaymentNumber(existingPaymentsCount + 1);
 
 
         if (paymentToSave.getPaymentType() == PaymentType.CASH) {
@@ -58,7 +62,6 @@ public class PaymentServiceImpl implements PaymentServiceInterface{
         else if (paymentToSave.getPaymentType() == PaymentType.CHECK) {
             paymentToSave.setStatus(PaymentStatus.WAITING);
             paymentToSave.setPaymentDate(new Date());
-
         }
 
         else if (paymentToSave.getPaymentType() == PaymentType.BANKTRANSFER) {
@@ -67,23 +70,49 @@ public class PaymentServiceImpl implements PaymentServiceInterface{
             paymentToSave.setCollectionDate(new Date());
         }
 
-        paymentToSave.setCommande(commande);
 
+        paymentToSave.setCommande(commande);
 
         Payment savedPayment = paymentRepository.save(paymentToSave);
 
-
         commande.setRemainingAmount(commande.getRemainingAmount().subtract(paymentToSave.getAmount()));
 
-
         commandeRepository.save(commande);
-
 
         return paymentMapper.toDto(savedPayment);
     }
 
 
+
+
+    public PaymentDto updatePaymentStatus(Long paymentId, PaymentStatus newStatus) {
+
+
+        Payment payment = paymentRepository.findById(paymentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Payment record not found."));
+
+
+        if (payment.getStatus() != PaymentStatus.WAITING) {
+            throw new BusinessValidationException("Only payments in WAITING status can be updated.");
+        }
+
+
+        payment.setStatus(newStatus);
+
+        if (newStatus == PaymentStatus.RECEIVED) {
+            payment.setCollectionDate(new Date());
+
+
+
+        } else if (newStatus == PaymentStatus.REJECTED) {
+
+            Commande commande = payment.getCommande();
+            commande.setRemainingAmount(commande.getRemainingAmount().add(payment.getAmount()));
+        }
+
+
+        Payment savedPayment = paymentRepository.save(payment);
+
+        return paymentMapper.toDto(savedPayment);
     }
-
-
-
+}

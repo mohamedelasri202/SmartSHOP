@@ -32,4 +32,24 @@ public class PaymentController {
         }
         PaymentDto savedPayment = paymentService.recordPayment(commandeId, paymentDto);
         return new ResponseEntity<>(savedPayment, HttpStatus.CREATED);
-    }}
+    }
+    @PutMapping("/{paymentId}/status")
+    public ResponseEntity<PaymentDto> updatePaymentStatus(
+            @PathVariable Long paymentId,
+
+            @RequestBody PaymentDto paymentDto,
+            HttpSession session) {
+
+        if (!authUtil.isAdmin(session)) {
+            throw new ForbiddenAccessException("Access denied. Only ADMIN users can record payments.");
+        }
+        PaymentDto updatedPaymentDto = paymentService.updatePaymentStatus(
+                paymentId,
+                paymentDto.getStatus()
+        );
+
+        return new ResponseEntity<>(updatedPaymentDto, HttpStatus.OK);
+    }
+
+
+}
