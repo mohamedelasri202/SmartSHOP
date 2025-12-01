@@ -12,10 +12,12 @@ import com.example.smartshop.Models.Payment;
 import com.example.smartshop.Repositories.CommandeRepository;
 import com.example.smartshop.Repositories.PaymentRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
+@Service
 public class PaymentServiceImpl implements PaymentServiceInterface{
 
     private final CommandeRepository commandeRepository;
