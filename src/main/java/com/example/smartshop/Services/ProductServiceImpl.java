@@ -47,6 +47,19 @@ public class ProductServiceImpl implements ProductServiceInterface {
                 productRepository.save(product);
 
     }
-//    @Override
-//    public Page<Product> getProducts(Pageable pageable) {}
+
+    public Page<ProductDto> getAllProducts(Pageable pageable, String nameFilter) {
+
+        Page<Product> productPage;
+
+        if (nameFilter != null && !nameFilter.trim().isEmpty()) {
+
+            productPage = productRepository.findByNameContainingIgnoreCaseAndIsDeletedFalse(nameFilter, pageable);
+        } else {
+
+            productPage = productRepository.findAllByIsDeletedFalse(pageable);
+        }
+
+        return productPage.map(productMapper::toDto);
+    }
 }

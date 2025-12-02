@@ -8,6 +8,8 @@ import com.example.smartshop.Services.ProductServiceInterface;
 import com.example.smartshop.Util.AuthUtil;
 import jakarta.servlet.http.HttpSession;
 //import jdk.swing.interop.SwingInterOpUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -61,5 +63,23 @@ public class ProductController {
         productService.deleteProduct(id);
         return  ResponseEntity.ok("the product has been deleted");
 }
+    @GetMapping
 
+    public ResponseEntity<Page<ProductDto>> getProducts(
+            Pageable pageable,
+            @RequestParam(required = false) String nameFilter,
+            HttpSession session) {
+
+        System.out.println("Session ID: " + (session != null ? session.getId() : "null"));
+        System.out.println("User ID from session: " + authUtil.getLoggedInUserId(session));
+        System.out.println("Session attributes: " + (session != null ? session.getAttributeNames() : "no session"));
+
+        if (authUtil.getLoggedInUserId(session) == null) {
+            throw new ForbiddenAccessException("Authentication required to view catalog.");
+        }
+
+        Page<ProductDto> productPage = productService.getAllProducts(pageable, nameFilter);
+
+        return ResponseEntity.ok(productPage);
+    }
 }

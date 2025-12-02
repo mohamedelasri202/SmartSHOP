@@ -17,4 +17,24 @@ public class AuthUtil {
         return role == UserRole.ADMIN ;
 
     }
+    public Long getLoggedInUserId(HttpSession session) {
+        if (session == null) {
+
+            return null;
+        }
+        Long userId = (Long) session.getAttribute("userId");
+
+        if (userId == null) {
+            return null;
+        }
+        return userId;
+    }
+
+    public Boolean isClient(HttpSession session) {
+        if (session == null) {
+            return false;
+        }
+        UserRole role = (UserRole) session.getAttribute("userRole");
+        return role != null && role == UserRole.CLIENT;
+    }
 }

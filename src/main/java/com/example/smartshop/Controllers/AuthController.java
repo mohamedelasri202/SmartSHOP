@@ -30,7 +30,7 @@ public class AuthController {
         public ResponseEntity<String> login(@RequestBody LoginRequest request ,HttpSession  session) {
 
             User user = authService.login(request.getUserName(),request.getPassword());
-
+            session.setAttribute("userId",user.getId());
             session.setAttribute("userID",user.getId());
             session.setAttribute("userRole",user.getRole());
             System.out.println(session.getAttribute("userRole"));

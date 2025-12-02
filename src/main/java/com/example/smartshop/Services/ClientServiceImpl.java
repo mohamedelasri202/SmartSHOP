@@ -4,6 +4,7 @@ package com.example.smartshop.Services;
 import com.example.smartshop.DTO.ClientCreationDto;
 import com.example.smartshop.DTO.ClientDto;
 import com.example.smartshop.Exceptions.BusinessValidationException;
+import com.example.smartshop.Exceptions.ResourceNotFoundException;
 import com.example.smartshop.Mapper.ClientMapper;
 import com.example.smartshop.Models.Client;
 import com.example.smartshop.Models.Enums.LoyaltyLevel;
@@ -16,6 +17,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ClientServiceImpl implements ClientServiceInterface {
@@ -62,6 +65,22 @@ public class ClientServiceImpl implements ClientServiceInterface {
         Client updatedClient = clientRepository.save(client);
 
         return clientMapper.toDto(updatedClient);
+    }
+
+    public ClientDto getClientProfile(Long id) {
+
+        Client client = clientRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Client profile not found with ID: " + id));
+        return clientMapper.toDto(client);
+    }
+    public List<ClientDto> getAllClients() {
+
+
+        List<Client> allClients = clientRepository.findAll();
+
+        return allClients.stream()
+                .map(clientMapper::toDto)
+                .collect(Collectors.toList());
     }
 
 

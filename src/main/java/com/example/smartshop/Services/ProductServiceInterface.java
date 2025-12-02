@@ -11,5 +11,5 @@ public interface ProductServiceInterface {
     ProductDto createProduct(ProductDto product);
     ProductDto updateProduct(ProductDto product,Long id);
     void deleteProduct(Long id);
-//    Page<Product> getProducts(Pageable pageable);
+    Page<ProductDto> getAllProducts(Pageable pageable,String nameFilter);
 }

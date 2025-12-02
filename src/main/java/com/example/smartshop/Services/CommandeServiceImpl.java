@@ -19,6 +19,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CommandeServiceImpl implements CommandeServiceInterface {
@@ -250,6 +251,25 @@ public class CommandeServiceImpl implements CommandeServiceInterface {
         return LoyaltyLevel.BASIC;
     }
 
+
+    public List<CommandeDto> getAllOrders() {
+
+        List<Commande> orders = commandeRepository.findAll();
+
+        return orders.stream()
+                .map(commandeMapper::toDto)
+                .collect(Collectors.toList());
+    }
+    public List<CommandeDto> getOrdersByClient(Long clientId) {
+
+
+        List<Commande> orders = commandeRepository.findAllByClientId(clientId);
+
+
+        return orders.stream()
+                .map(commandeMapper::toDto)
+                .collect(Collectors.toList());
+    }
 
 
 }
